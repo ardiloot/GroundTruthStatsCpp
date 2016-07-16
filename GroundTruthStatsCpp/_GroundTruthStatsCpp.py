@@ -8,7 +8,8 @@ class GroundTruthStatsCpp(object):
                                          tolXY, tolZ)
 
     def AddLocations(self, frameNrs, coords, photons):
-        self._stats.AddLocations(frameNrs, coords[0], coords[1], coords[2], photons)
+        # return (distXY, distZ)
+        return self._stats.AddLocations(frameNrs, coords[0], coords[1], coords[2], photons)
     
     def RemoveLocations(self, frameNrs, coords, photons):
         self._stats.RemoveLocations(frameNrs, coords[0], coords[1], coords[2], photons)
@@ -19,7 +20,7 @@ class GroundTruthStatsCpp(object):
     def Clear(self):
         return self._stats.Clear()
         
-    def GetStat(self):
+    def GetStats(self):
         return self._stats.GetStat()
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ cdef extern from "GroundTruthStatistics.h" namespace "GroundTruthStatistics":
         GroundTruthStats()
         GroundTruthStats(int _nTotalGts, int * _gtNrs, double * _gtXs, double * _gtYs, double * _gtZs,
             double * _gtPhotons, int _nrGroundTruthMolecules, double _tolXY, double _tolZ) except +
-        void AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons)
+        AddLocationsResult AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons)
         void RemoveLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons);
         MatchingResult MatchFrame(int frameNr, int m, int *nrs, double *xs, double *ys, double *zs, double *photons)
         Stats GetStat()
@@ -37,6 +37,11 @@ cdef extern from "GroundTruthStatistics.h" namespace "GroundTruthStatistics":
         MatchingResult()
         vector[int] idsTest
         vector[int] idsTrue
+        vector[double] distsXY
+        vector[double] distsZ
+
+    cdef cppclass AddLocationsResult:
+        AddLocationsResult()
         vector[double] distsXY
         vector[double] distsZ
     
@@ -66,7 +71,8 @@ cdef class PyGroundTruthStats:
                   np.ndarray[double, ndim = 1, mode = "c"] photons not None,):
         
         cdef int n = nrs.shape[0]
-        self._cppStats.AddLocations(n, &nrs[0], &xs[0], &ys[0], &zs[0], &photons[0])
+        cdef AddLocationsResult r = self._cppStats.AddLocations(n, &nrs[0], &xs[0], &ys[0], &zs[0], &photons[0])
+        return r.distsXY, r.distsZ
     
     @cython.boundscheck(False)
     @cython.wraparound(False)

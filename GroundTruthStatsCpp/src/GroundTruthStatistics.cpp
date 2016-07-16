@@ -138,7 +138,7 @@ namespace GroundTruthStatistics {
 		Clear();
 	}
 
-	void GroundTruthStats::AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons) {
+	AddLocationsResult GroundTruthStats::AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons) {
 		// Find frames to match
 		std::set<int> framesToMatch;
 		for (int i = 0; i < m; i++) {
@@ -157,8 +157,11 @@ namespace GroundTruthStatistics {
 		}
 
 		// Update locs by frames
+		std::vector<std::pair<int, int> > inputIndexToLocsByFramesIndex;
 		for (int i = 0; i < m; i++) {
-			addedLocsByFrames[nrs[i]].Add(nrs[i], xs[i], ys[i], zs[i], photons[i], i);
+			Locations &tmp = addedLocsByFrames[nrs[i]];
+			tmp.Add(nrs[i], xs[i], ys[i], zs[i], photons[i], i);
+			inputIndexToLocsByFramesIndex.push_back(std::make_pair(nrs[i], tmp.size() - 1));
 		}
 
 		// Add stats for every frame in framesToMatch
@@ -170,6 +173,17 @@ namespace GroundTruthStatistics {
 			AddToStatistics(r, locs);
 			//break;
 		}
+
+		// AddLocationsResult
+		AddLocationsResult res;
+		for (int i = 0; i < inputIndexToLocsByFramesIndex.size(); i++){
+			int frameNr = inputIndexToLocsByFramesIndex[i].first;
+			int indexInLocsByFrames = inputIndexToLocsByFramesIndex[i].second;
+			Locations &tmp = addedLocsByFrames[frameNr];
+			res.distsXY.push_back(tmp.distsXY[indexInLocsByFrames]);
+			res.distsZ.push_back(tmp.distsZ[indexInLocsByFrames]);
+		}
+		return res;
 	}
 
 	void GroundTruthStats::RemoveLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons) {
@@ -245,13 +259,19 @@ namespace GroundTruthStatistics {
 		Matrix<bool> munkresRes = munkres.solve(cost);
 
 		// Result
+		locs.distsXY.resize(locs.size(), tolXY);
+		locs.distsZ.resize(locs.size(), tolZ);
 		MatchingResult res(frameNr);
 		for (int i = 0; i < locs.size(); i++) {
+			locs.distsXY[i] = tolXY;
+			locs.distsZ[i] = tolZ;
 			for (int j = 0; j < gtLocsThisFrame.size(); j++) {
 				if (!munkresRes(i, j) || cost(i, j) >= 1.0) {
 					continue;
 				}
 				res.Add(i, j, distXY[i][j], distZ[i][j]);
+				locs.distsXY[i] = distXY[i][j];
+				locs.distsZ[i] = distZ[i][j];
 			}
 		}
 

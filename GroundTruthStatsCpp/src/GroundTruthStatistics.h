@@ -18,6 +18,7 @@ namespace GroundTruthStatistics {
 	public:
 		std::vector<int> nrs, indices;
 		std::vector<double> xs, ys, zs, photons;
+		std::vector<double> distsXY, distsZ;
 
 		Locations();
 		void Add(int nr, double x, double y, double z, double photon, int index = 0);
@@ -38,6 +39,17 @@ namespace GroundTruthStatistics {
 		MatchingResult(int _frameNr = -1);
 		void Add(int idTest, int idTrue, double distXY, double distZ);
 		int size();
+
+	private:
+	};
+
+	// AddLocationsResult
+	class AddLocationsResult{
+	public:
+		std::vector<double> distsXY;
+		std::vector<double> distsZ;
+
+		AddLocationsResult() {};
 
 	private:
 	};
@@ -72,7 +84,7 @@ namespace GroundTruthStatistics {
 		GroundTruthStats() {};
 		GroundTruthStats(int _nTotalGts, int *_gtNrs, double *_gtXs, double *_gtYs, double *_gtZs, 
 			double *_gtPhotons, int _nrGroundTruthMolecules, double _tolXY = 250e-9, double _tolZ = 500e-9);
-		void AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons);
+		AddLocationsResult AddLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons);
 		void RemoveLocations(int m, int *nrs, double *xs, double *ys, double *zs, double *photons);
 		MatchingResult MatchFrame(int frameNr, Locations &locs);
 		MatchingResult MatchFrame(int frameNr, int m, int *nrs, double *xs, double *ys, double *zs, double *photons);
