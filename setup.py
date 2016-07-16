@@ -17,6 +17,7 @@ setup(name = "GroundTruthStatsCpp",
       author = "Ardi Loot",
       author_email = "ardi.loot@outlook.com",
       packages = ["GroundTruthStatsCpp"],
+      install_requires = ["numpy"],
       cmdclass = cmdclass,
       ext_modules = [ext],)
 
