@@ -273,7 +273,7 @@ namespace GroundTruthStatistics {
 				if (!munkresRes(i, j) || cost(i, j) >= 1.0) {
 					continue;
 				}
-				res.Add(i, j, distXY[i][j], distZ[i][j]);
+				res.Add(i, gtLocsThisFrame.indices[j], distXY[i][j], distZ[i][j]);
 				locs.distsXY[i] = distXY[i][j];
 				locs.distsZ[i] = distZ[i][j];
 			}
@@ -317,11 +317,11 @@ namespace GroundTruthStatistics {
 			int testIndex = r.idsTest[i], trueIndex = r.idsTrue[i];
 			distXYSqrSum += coef * sqr(r.distsXY[i]);
 			distZSqrSum += coef * sqr(r.distsZ[i]);
-			totalDx += coef * (addedLocs.xs[testIndex] - gtLocsThisFrame.xs[trueIndex]);
-			totalDy += coef * (addedLocs.ys[testIndex] - gtLocsThisFrame.ys[trueIndex]);
-			totalDz += coef * (addedLocs.zs[testIndex] - gtLocsThisFrame.zs[trueIndex]);
-			photonsScale += coef * (addedLocs.photons[testIndex] / gtLocsThisFrame.photons[trueIndex]);
-			photonsDelta += coef * (addedLocs.photons[testIndex] - gtLocsThisFrame.photons[trueIndex]);
+			totalDx += coef * (addedLocs.xs[testIndex] - gtXs[trueIndex]);
+			totalDy += coef * (addedLocs.ys[testIndex] - gtYs[trueIndex]);
+			totalDz += coef * (addedLocs.zs[testIndex] - gtZs[trueIndex]);
+			photonsScale += coef * (addedLocs.photons[testIndex] / gtPhotons[trueIndex]);
+			photonsDelta += coef * (addedLocs.photons[testIndex] - gtPhotons[trueIndex]);
 		}
 
 		int nTP = r.size();
