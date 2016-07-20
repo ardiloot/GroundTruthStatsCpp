@@ -220,10 +220,16 @@ namespace GroundTruthStatistics {
 	}
 
 	MatchingResult GroundTruthStats::MatchFrame(int frameNr, Locations &locs) {
+		// Make space for distances
+		locs.distsXY.resize(locs.size(), tolXY);
+		locs.distsZ.resize(locs.size(), tolZ);
+
 		// Get ground-truth for this frame
 		Locations &gtLocsThisFrame = gtLocsByFrames[frameNr];
+		//std::cout << "MATCH " << frameNr << " " << locs.size() << " " << gtLocsThisFrame.size() << std::endl;
 
 		if (locs.size() == 0 || gtLocsThisFrame.size() == 0) {
+			//std::cout << "RETURN NONE" << std::endl;
 			return MatchingResult(frameNr);
 		}
 
@@ -259,8 +265,6 @@ namespace GroundTruthStatistics {
 		Matrix<bool> munkresRes = munkres.solve(cost);
 
 		// Result
-		locs.distsXY.resize(locs.size(), tolXY);
-		locs.distsZ.resize(locs.size(), tolZ);
 		MatchingResult res(frameNr);
 		for (int i = 0; i < locs.size(); i++) {
 			locs.distsXY[i] = tolXY;
